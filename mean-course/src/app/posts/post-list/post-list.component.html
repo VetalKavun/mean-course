@@ -1,7 +1,7 @@
 <mat-accordion multi="true" *ngIf="posts.length > 0">
   <mat-expansion-panel *ngFor="let post of posts">
     <mat-expansion-panel-header>{{post.title}}</mat-expansion-panel-header>
-    <mat-panel-title>{{post.description}}</mat-panel-title>
+    <mat-panel-title>{{post.content}}</mat-panel-title>
   </mat-expansion-panel>
 </mat-accordion>
 <p class="info-text mat-body-2" *ngIf="posts.length <= 0">There is no saved posts</p>
