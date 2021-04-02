@@ -1,7 +1,16 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
+const Post = require('./models/post');
+const mongoose = require('mongoose');
 
+mongoose.connect('mongodb+srv://viatlii:qUZASzAmVeccwdNC@cluster0.eiois.mongodb.net/myFirstDatabase?retryWrites=true&w=majority', { useUnifiedTopology: true, useNewUrlParser: true })
+.then(() => {
+  console.log('Connected to the database');
+})
+.catch((err) => {
+  console.log(err);
+});
 
 
 app.use((req, res, next) => {
@@ -14,30 +23,39 @@ app.use((req, res, next) => {
 app.use(bodyParser.json());
 
 app.post('/api/posts', (req, res, next) => {
-  const post = req.body;
-  console.log(post);
-  res.status(201).json({
-    message: 'Post added succesfully'
+  const post = new Post({
+    title: req.body.title,
+    content: req.body.content
+  })
+  post.save().then((result) => {
+    res.status(201).json({
+      message: 'Post added succesfully',
+      postId: result.id
+    });
   });
+
 })
 
-app.use('/api/posts', (req, res, next) => {
-  const posts = [
-    {
-      id: 'erq325ewrew',
-      title: 'The first post',
-      content: 'The first content'
-    },
-    {
-      id: 'erqwertwrtyrew',
-      title: 'The second post',
-      content: 'The second content'
-    }
-  ];
-  res.status(200).json({
-    message: "Posts fetched succesfully",
-    posts: posts
+app.get('/api/posts', (req, res, next) => {
+  Post.find()
+  .then((documents) => {
+    console.log(documents);
+    res.status(200).json({
+      message: "Posts fetched succesfully",
+      posts: documents
+    });
   });
 });
+
+app.delete('/api/posts/:id', (req, res, next) => {
+  Post.deleteOne({_id: req.params.id}).then(() => {
+    console.log(req.params.id);
+    res.status(200).json({
+      message: 'The post deleted from DB'
+    })
+  })
+})
+
+
 
 module.exports = app;
